@@ -1,0 +1,6 @@
+<launch>
+<include file="$(find mapr_drone_project)/launch/map_small.launch" />
+<node name="graph_search" pkg="mapr_drone_project" type="astar_3d.py" output="screen" />
+<node name="points" pkg="mapr_drone_project" type="points_3d.py" output="screen" />
+<node name="rviz" pkg="rviz" type="rviz" />
+</launch>

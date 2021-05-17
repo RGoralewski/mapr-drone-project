@@ -1,0 +1,3 @@
+<launch>
+<node name="map" pkg="map_server" type="map_server" args="$(find mapr_drone_project)/maps/map_small.yaml" />
+</launch>
