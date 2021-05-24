@@ -3,6 +3,8 @@ import rospy as rp
 from grid_map_3d import GridMap3D
 import heapq as pq
 import math
+from scipy.interpolate import LSQUnivariateSpline
+import numpy as np
 
 
 class AStar3D(GridMap3D):
@@ -77,8 +79,20 @@ class AStar3D(GridMap3D):
             if parent == self.start:
                 break
 
+        knots_coeff = 2
+        upsampling = 10
+        backtrace_np = np.array(backtrace)
+        smooth_backtrace_np = np.zeros((backtrace_np.shape[0] * upsampling, backtrace_np.shape[1]))
+        for i in range(backtrace_np.shape[1]):
+            y = backtrace_np[:, i]
+            x = np.linspace(0, backtrace_np.shape[0], backtrace_np.shape[0])
+            t = np.linspace(0, backtrace_np.shape[0], backtrace_np.shape[0] // knots_coeff)[1:-2]
+            spl = LSQUnivariateSpline(x, y, t)
+            smooth_backtrace_np[:, i] = spl(np.linspace(0, backtrace_np.shape[0], backtrace_np.shape[0] * upsampling))
+
         # Publish the path
-        self.publish_path(backtrace)
+        self.publish_path(smooth_backtrace_np)
+
         print(f"Backtrace calculated")
         input("Press ENTER key to exit...")
 
