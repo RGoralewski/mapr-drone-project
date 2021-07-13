@@ -1,4 +1,6 @@
 #!/usr/bin/env python
+import time
+
 import rospy as rp
 from grid_map_3d import GridMap3D
 import heapq as pq
@@ -13,8 +15,6 @@ class AStar3D(GridMap3D):
 
         self.directions = [(0, -1, 0), (-1, 0, 0), (0, 1, 0), (1, 0, 0), (0, 0, -1), (0, 0, 1)]
 
-        self.map_depth = 10
-
     def heuristics(self, pos):
         # Euclidean
         distance = math.sqrt((pos[0] - self.end[0])**2 + (pos[1] - self.end[1])**2 + (pos[2] - self.end[2])**2)
@@ -25,10 +25,10 @@ class AStar3D(GridMap3D):
 
         # Cells to visit single element -> (cost=distance+heuristics, point=(x, y, z))
         cells_to_visit = [(0, self.start)]
-        distances = {str((i, j, k)): 99999
-                     for i in range(self.map.info.height)
-                     for j in range(self.map.info.width)
-                     for k in range(self.map_depth)}
+        distances = {str((i, j, k)): np.inf
+                     for i in range(self.map.shape[2])
+                     for j in range(self.map.shape[1])
+                     for k in range(self.map.shape[0])}
         distances[str(self.start)] = 0
         parents = {}
 
@@ -41,10 +41,11 @@ class AStar3D(GridMap3D):
                 print("End cell found!")
                 break
 
+            self.publish_map_as_points()
             # Check if the cell is not a wall
-            if not (self.map.data[current_cell[1] + current_cell[0] * self.map.info.width] == 100):
+            if not (self.map[current_cell[2], current_cell[1], current_cell[0]] == 100):
                 # Mark as visited
-                self.map.data[current_cell[1] + current_cell[0] * self.map.info.width] = 50
+                self.map.data[current_cell[2], current_cell[1], current_cell[0]] = 50
 
                 # Iterate over neighbours
                 for d in self.directions:
@@ -52,9 +53,9 @@ class AStar3D(GridMap3D):
 
                     # Check if the neighbours exists on the map
                     if (neighbour[0] >= 0) and (neighbour[1] >= 0) and (neighbour[2] >= 0)\
-                            and (neighbour[0] < self.map.info.height) and (neighbour[1] < self.map.info.width) and (neighbour[2] < self.map_depth):
+                            and (neighbour[0] < self.map.shape[2]) and (neighbour[1] < self.map.shape[1]) and (neighbour[2] < self.map.shape[0]):
 
-                        print(f"old distance: {distances[str(neighbour)]}, new: {distances[str(current_cell)] + 1}")
+                        # print(f"old distance: {distances[str(neighbour)]}, new: {distances[str(current_cell)] + 1}")
 
                         # Check if the distance from the start to this neighbour is smaller than the previous one
                         if (distances[str(current_cell)] + 1) < distances[str(neighbour)]:
@@ -69,7 +70,9 @@ class AStar3D(GridMap3D):
                             parents[str(neighbour)] = current_cell
 
             # Every iteration publishes visited cells
-            self.publish_visited()
+            # self.publish_visited()
+            self.publish_map_as_points()
+
 
         # When the end cell is found, calculate a path to it
         backtrace = [self.end]

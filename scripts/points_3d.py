@@ -37,10 +37,8 @@ class Point3D:
 
 if __name__ == '__main__':
     rp.init_node('points_3d')
-    #st = Point(1.2, 1.2, "start", (0.0, 1.0, 0.0))
-    #en = Point(2.8, 2.8, "end", (1.0, 0.0, 0.0))
-    st = Point3D(0.7, 0.7, 0.0, "start", (0.0, 1.0, 0.0))
-    en = Point3D(0.5, 1.3, 0.5, "end", (1.0, 0.0, 0.0))
+    st = Point3D(0.5, 0.5, 0.0, "start", (0.0, 1.0, 0.0))
+    en = Point3D(0.5, 1.3, 0.4, "end", (1.0, 0.0, 0.0))
     while not rp.is_shutdown():
         st.publish()
         en.publish()
