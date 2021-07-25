@@ -3,6 +3,7 @@ import time
 
 import rospy as rp
 from grid_map_3d import GridMap3D
+from points_3d import Point3D
 import heapq as pq
 import math
 from scipy.interpolate import LSQUnivariateSpline
@@ -71,8 +72,6 @@ class AStar3D(GridMap3D):
 
             # Every iteration publishes visited cells
             # self.publish_visited()
-            self.publish_map_as_points()
-
 
         # When the end cell is found, calculate a path to it
         backtrace = [self.end]
@@ -96,8 +95,17 @@ class AStar3D(GridMap3D):
         # Publish the path
         self.publish_path(smooth_backtrace_np)
 
-        print(f"Backtrace calculated")
-        input("Press ENTER key to exit...")
+        # Visualize drone's flight
+        print(smooth_backtrace_np.shape)
+        for point_on_path in smooth_backtrace_np:
+            drone = Point3D(point_on_path[1] * self.map_resolution,
+                            point_on_path[0] * self.map_resolution,
+                            point_on_path[2] * self.map_resolution,
+                            "drone",
+                            (1.0, 1.0, 1.0))
+            drone.publish()
+            rp.sleep(0.1)
+            print("published!")
 
 
 if __name__ == '__main__':

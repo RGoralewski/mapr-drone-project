@@ -763,6 +763,14 @@ Visualization Manager:
         end: true
       Queue Size: 100
       Value: true
+    - Class: rviz/Marker
+      Enabled: true
+      Marker Topic: /point_drone
+      Name: Marker
+      Namespaces:
+        drone: true
+      Queue Size: 100
+      Value: true
   Enabled: true
   Global Options:
     Background Color: 48; 48; 48
@@ -791,7 +799,7 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz/Orbit
-      Distance: 4.027906894683838
+      Distance: 4.663058757781982
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.05999999865889549
         Stereo Focal Distance: 1
@@ -807,9 +815,9 @@ Visualization Manager:
       Invert Z Axis: false
       Name: Current View
       Near Clip Distance: 0.009999999776482582
-      Pitch: 1.1703978776931763
+      Pitch: 1.1897965669631958
       Target Frame: <Fixed Frame>
-      Yaw: 5.543576240539551
+      Yaw: 5.758585453033447
     Saved: ~
 Window Geometry:
   Displays:
@@ -827,5 +835,5 @@ Window Geometry:
   Views:
     collapsed: false
   Width: 1250
-  X: 56
-  Y: 31
+  X: 52
+  Y: 2
