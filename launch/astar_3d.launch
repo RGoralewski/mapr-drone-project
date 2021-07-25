@@ -2,5 +2,6 @@
 <include file="$(find mapr_drone_project)/launch/map_small.launch" />
 <node name="graph_search" pkg="mapr_drone_project" type="astar_3d.py" output="screen" />
 <node name="points" pkg="mapr_drone_project" type="points_3d.py" output="screen" />
-<node name="rviz" pkg="rviz" type="rviz" />
+<arg name="rviz_config_file" default="$(find mapr_drone_project)/launch/astar_3d.rviz" doc="the path to the rviz config file to be opened" />
+<node name="rviz" pkg="rviz" type="rviz" args="-d $(arg rviz_config_file)"/>
 </launch>
