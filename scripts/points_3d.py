@@ -1,6 +1,9 @@
 #!/usr/bin/env python
+import numpy as np
 import rospy as rp
 from visualization_msgs.msg import Marker
+import os
+import json
 
 
 class Point3D:
@@ -37,8 +40,17 @@ class Point3D:
 
 if __name__ == '__main__':
     rp.init_node('points_3d')
-    st = Point3D(0.5, 0.5, 0.0, "start", (0.0, 1.0, 0.0))
-    en = Point3D(0.5, 1.3, 0.4, "end", (1.0, 0.0, 0.0))
+
+    map_resolution = 0.1
+    maps_dir = '/home/radek/catkin_mapr/src/mapr_drone_project/maps'
+    json_filename = 'B.json'
+    with open(os.path.join(maps_dir, json_filename)) as f:
+        points_json = json.load(f)
+        start_pt = np.array(points_json['start']) * map_resolution
+        end_pt = np.array(points_json['end']) * map_resolution
+
+    st = Point3D(start_pt[1], start_pt[0], start_pt[2], "start", (0.0, 1.0, 0.0))
+    en = Point3D(end_pt[1], end_pt[0], end_pt[2], "end", (1.0, 0.0, 0.0))
     while not rp.is_shutdown():
         st.publish()
         en.publish()

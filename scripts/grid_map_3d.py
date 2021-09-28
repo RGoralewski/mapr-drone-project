@@ -6,26 +6,32 @@ from visualization_msgs.msg import Marker, MarkerArray
 import cv2
 import numpy as np
 from points_3d import Point3D
+import os
 
 
 class GridMap3D(object):
     def __init__(self):
 
-        # TODO load images (for now try load one map.pgm in opencv) and create a 3d points map from them
-        img_small_map = cv2.imread("/home/radek/catkin_mapr/src/mapr_drone_project/maps/map_small.pgm", cv2.IMREAD_GRAYSCALE)
-        map_3d = np.tile(img_small_map, (8, 1, 1))
-        self.map = (map_3d < 50).astype(int) * 100
+        maps_dir = '/home/radek/catkin_mapr/src/mapr_drone_project/maps'
+        map_name = 'b'
+        map_3d = []
+        for filename in sorted(os.listdir(maps_dir)):
+            if (map_name in filename) and filename.endswith('.png'):
+                print(filename)
+                map_layer = cv2.imread(os.path.join(maps_dir, filename), cv2.IMREAD_GRAYSCALE)
+                map_3d.append(map_layer)
+        map_3d = np.array(map_3d)
+        self.map = (map_3d < 99).astype(int) * 100
         self.map_resolution = 0.1
-        self.map_pub = rp.Publisher('markers_map', MarkerArray)
+        self.map_pub = rp.Publisher('markers_map', MarkerArray, queue_size=10)
 
-        # self.map = None
+        rp.init_node('graph_search')
+
         self.start = None
         self.end = None
-        rp.init_node('graph_search')
-        # rp.Subscriber('map', OccupancyGrid, self.map_callback)
+
         rp.Subscriber('point_start', Marker, self.set_start)
         rp.Subscriber('point_end', Marker, self.set_end)
-        # self.pub = rp.Publisher('astar3d', OccupancyGrid, queue_size=10)
         self.path_pub = rp.Publisher('path', Path, queue_size=10)
         while self.map is None or self.start is None or self.end is None:
             rp.sleep(0.1)

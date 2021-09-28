@@ -8,6 +8,7 @@ import heapq as pq
 import math
 from scipy.interpolate import LSQUnivariateSpline
 import numpy as np
+import time
 
 
 class AStar3D(GridMap3D):
@@ -33,6 +34,8 @@ class AStar3D(GridMap3D):
         distances[str(self.start)] = 0
         parents = {}
 
+        start_time = time.time()
+
         while cells_to_visit:
 
             current_cell = pq.heappop(cells_to_visit)[1]
@@ -43,6 +46,7 @@ class AStar3D(GridMap3D):
                 break
 
             self.publish_map_as_points()
+
             # Check if the cell is not a wall
             if not (self.map[current_cell[2], current_cell[1], current_cell[0]] == 100):
                 # Mark as visited
@@ -72,6 +76,8 @@ class AStar3D(GridMap3D):
 
             # Every iteration publishes visited cells
             # self.publish_visited()
+
+        print(f'Path to the endpoint found in {time.time() - start_time}s')
 
         # When the end cell is found, calculate a path to it
         backtrace = [self.end]
@@ -105,7 +111,6 @@ class AStar3D(GridMap3D):
                             (1.0, 1.0, 1.0))
             drone.publish()
             rp.sleep(0.1)
-            print("published!")
 
 
 if __name__ == '__main__':
